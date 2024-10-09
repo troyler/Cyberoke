@@ -11,10 +11,10 @@ export const signup = async (req, res, next) => {
     try{
         await newUser.save();
         res.status(201).json({ message: "User created successfully"});
-
-    } catch(error) {
-        next(error);
     }
+    catch(error) {
+        next(error);
+    };
 };
 
 
@@ -25,12 +25,12 @@ export const signin = async (req, res, next) => {
         if (!validUser) return next(errorHandler(401, "User not found"));
             const validPassword = bcryptjs.compareSync(password, validUser.password);
         if (!validUser) return next(errorHandler(401, "Invalid Credentials"));
-        const token = jwt.sign({ id: validUser._id}, process.env.JWT_SECRET);
-        const { password: hashedPassword, ...rest } = validUser._doc;
+        const token = jwt.sign({ id: validUser._id}, process.env.JWT_SECRET); //create token using mongo id attribute
+        const { password: hashedPassword, ...rest } = validUser._doc; //remove password
         const expiryDate = new Date(Date.now() + 3600000);
         res.cookie('token', token, {httpOnly: true, expires: expiryDate }).status(200).json(rest);
-        } catch(error) {
-            next(error);
-        }
+    } catch(error) {
+        next(error);
+    };
 };
 
