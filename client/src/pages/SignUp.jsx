@@ -72,7 +72,7 @@ const handleSubmit = async (e) => {
           <span className='text-blue-500'>Sign In</span>
         </Link>
       </div>
-      <p className='text-red-600'>{error && "Something went wrong"}</p>
+      <p className='text-red-600'>{error && "Username or email taken"}</p>
     </div>
   )
 }
