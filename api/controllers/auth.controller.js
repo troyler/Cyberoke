@@ -23,8 +23,8 @@ export const signin = async (req, res, next) => {
     try{
         const validUser = await User.findOne({email});
         if (!validUser) return next(errorHandler(401, "User not found"));
-            const validPassword = bcryptjs.compareSync(password, validUser.password);
-        if (!validUser) return next(errorHandler(401, "Invalid Credentials"));
+        const validPassword = bcryptjs.compareSync(password, validUser.password);
+        if (!validPassword) return next(errorHandler(401, "Invalid Credentials"));
         const token = jwt.sign({ id: validUser._id}, process.env.JWT_SECRET); //create token using mongo id attribute
         const { password: hashedPassword, ...rest } = validUser._doc; //remove password
         const expiryDate = new Date(Date.now() + 3600000);

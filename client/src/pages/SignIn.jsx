@@ -1,20 +1,21 @@
 import { useState } from 'react'
 import { Link, useNavigate} from 'react-router-dom'
+import { signInSuccess, signInStart, signInFailure } from '../redux/user/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const {loading, error} = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({...formData, [e.target.id]: e.target.value});
   };
 
 const handleSubmit = async (e) => {
+  e.preventDefault();
   try {
-    e.preventDefault(); //prevents auto-refresh after submit
-    setLoading(true);
-    setError(false);
+    dispatch(signInStart());
     const res = await fetch('/api/auth/signin', {
       method: 'POST',
       headers: {
@@ -24,15 +25,14 @@ const handleSubmit = async (e) => {
     });
     const data = await res.json();
     console.log(data);
-    setLoading(false);
     if (data.success === false) {
-      setError(true);
+      dispatch(signInFailure(data));
       return;
     }
-    navigate("/")
+    dispatch(signInSuccess(data));
+    navigate("/");
   } catch (error) {
-    setLoading(false);
-    setError(true);
+    dispatch(signInFailure(error))
   }
   
 };
@@ -65,7 +65,7 @@ const handleSubmit = async (e) => {
           <span className='text-blue-500'>Sign Up</span>
         </Link>
       </div>
-      <p className='text-red-600'>{error && "Invalid Credentials"}</p>
+      <p className='text-red-600'>{error ? error.message || "Invalid Credentials": " "}</p>
     </div>
   )
 }
